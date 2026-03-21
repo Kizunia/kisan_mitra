@@ -77,6 +77,13 @@ class _FarmerProfileScreenState extends State<FarmerProfileScreen> {
 
           final profile = controller.userProfile;
           final activity = controller.userActivity;
+          
+          final locale = Localizations.localeOf(context).languageCode;
+          final currentLanguageDisplay = switch (locale) {
+            'hi' => 'हिंदी',
+            'mr' => 'मराठी',
+            _ => 'English',
+          };
 
           return SafeArea(
             child: SingleChildScrollView(
@@ -385,7 +392,7 @@ class _FarmerProfileScreenState extends State<FarmerProfileScreen> {
                             _buildSettingsItem(
                               icon: Icons.language,
                               title: AppLocalizations.of(context).language,
-                              trailing: 'English',
+                              trailing: currentLanguageDisplay,
                               onTap: () {
                                 Navigator.push(
                                   context,
