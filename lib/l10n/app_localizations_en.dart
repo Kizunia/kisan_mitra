@@ -1718,4 +1718,113 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get soilArid => 'Arid (Desert)';
+
+  @override
+  String get smartSoilAnalyzer => 'Smart Soil Analyzer';
+
+  @override
+  String get smartSoilAnalyzerSubtitle =>
+      'Analyze soil using\nsmartphone microphone';
+
+  @override
+  String get soilRecordInstruction =>
+      'Insert a metal rod into the soil and tap it gently. Hold your phone close to capture the sound.';
+
+  @override
+  String get soilStepInsert => 'Insert';
+
+  @override
+  String get soilStepTap => 'Tap';
+
+  @override
+  String get soilStepRecord => 'Record';
+
+  @override
+  String get soilTapToRecord => 'Tap to start recording';
+
+  @override
+  String get soilTapToStop => 'Tap to stop';
+
+  @override
+  String get soilProcessing => 'Processing...';
+
+  @override
+  String get soilKeepRecording => 'Keep recording...';
+
+  @override
+  String get soilCanStopNow => 'You can stop now';
+
+  @override
+  String get soilAnalyzing => 'Analyzing Soil...';
+
+  @override
+  String get soilAnalyzingSubtext =>
+      'Extracting audio features and generating soil analysis. This may take a moment.';
+
+  @override
+  String get soilResultsTitle => 'Soil Analysis Results';
+
+  @override
+  String get soilAnalysisResults => 'Soil Analysis';
+
+  @override
+  String get soilMoistureLabel => 'Moisture';
+
+  @override
+  String get soilMoistureLow => 'Low';
+
+  @override
+  String get soilMoistureMedium => 'Medium';
+
+  @override
+  String get soilMoistureHigh => 'High';
+
+  @override
+  String get soilDensityLabel => 'Density';
+
+  @override
+  String get soilDensityLoose => 'Loose';
+
+  @override
+  String get soilDensityMedium => 'Medium';
+
+  @override
+  String get soilDensityCompact => 'Compact';
+
+  @override
+  String get soilCompactionLabel => 'Compaction Level';
+
+  @override
+  String get soilConfidenceLabel => 'Analysis Confidence';
+
+  @override
+  String get soilWeatherContext => 'Weather Context';
+
+  @override
+  String get soilWarnings => 'Warnings';
+
+  @override
+  String get soilFertilizerPlan => 'Fertilizer Recommendations';
+
+  @override
+  String get soilIrrigationAdvice => 'Irrigation Advice';
+
+  @override
+  String get soilAnalyzeAgain => 'Analyze Again';
+
+  @override
+  String get soilErrorMicPermission =>
+      'Microphone permission is required. Please grant access in your device settings and try again.';
+
+  @override
+  String get soilErrorTooShort =>
+      'Recording too short. Please record for at least 5 seconds.';
+
+  @override
+  String get soilErrorNoSignal =>
+      'No clear signal detected. Please ensure you are tapping the metal rod near the microphone.';
+
+  @override
+  String get soilErrorGeneral =>
+      'Something went wrong during analysis. Please try again.';
 }

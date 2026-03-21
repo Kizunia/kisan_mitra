@@ -10,7 +10,7 @@ import '../../../../core/controllers/ai_assistant_controller.dart';
 import '../../../../core/localization/locale_provider.dart';
 import '../../../../core/services/intent_service.dart';
 import '../../../../core/widgets/ai_floating_button.dart';
-import '../soil_health/soil_health_check_screen.dart';
+import '../../soil_acoustic/soil_record_screen.dart';
 
 /// Farmer Dashboard Screen
 /// Main container for farmer module with persistent bottom navigation
@@ -59,8 +59,14 @@ class _FarmerDashboardScreenState extends State<FarmerDashboardScreen> {
   void _playStartupGreeting() {
     if (!mounted) return;
     try {
-      final localeProvider = Provider.of<LocaleProvider>(context, listen: false);
-      final aiController = Provider.of<AiAssistantController>(context, listen: false);
+      final localeProvider = Provider.of<LocaleProvider>(
+        context,
+        listen: false,
+      );
+      final aiController = Provider.of<AiAssistantController>(
+        context,
+        listen: false,
+      );
       aiController.playStartupGreeting(
         startListeningAfter: true,
         languageCode: localeProvider.currentLanguageCode,
@@ -74,7 +80,10 @@ class _FarmerDashboardScreenState extends State<FarmerDashboardScreen> {
   void _setupAiAssistantNavigation() {
     if (!mounted) return;
     try {
-      final controller = Provider.of<AiAssistantController>(context, listen: false);
+      final controller = Provider.of<AiAssistantController>(
+        context,
+        listen: false,
+      );
       controller.onNavigate = (route, tabIndex) {
         if (!mounted) return;
         if (tabIndex != null) {
@@ -84,9 +93,7 @@ class _FarmerDashboardScreenState extends State<FarmerDashboardScreen> {
           if (route == IntentService.soilHealthRoute) {
             Navigator.push(
               context,
-              MaterialPageRoute(
-                builder: (context) => const SoilHealthCheckScreen(),
-              ),
+              MaterialPageRoute(builder: (context) => const SoilRecordScreen()),
             );
           } else {
             Navigator.of(context).pushNamed(route);

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:kisan_mitra/l10n/app_localizations.dart';
 import 'home/farmer_home_controller.dart';
-import 'soil_health/soil_health_check_screen.dart';
+import '../soil_acoustic/soil_record_screen.dart';
 
 /// Farmer Dashboard Home Screen
 /// Displays welcome message and action cards
@@ -76,16 +76,16 @@ class _FarmerHomeScreenState extends State<FarmerHomeScreen> {
                     ),
                     const SizedBox(height: 16),
                     _buildActionCard(
-                      icon: Icons.science,
-                      title: AppLocalizations.of(context).soilHealthCheck,
+                      icon: Icons.mic_rounded,
+                      title: AppLocalizations.of(context).smartSoilAnalyzer,
                       subtitle: AppLocalizations.of(
                         context,
-                      ).soilHealthCheckSubtitle,
+                      ).smartSoilAnalyzerSubtitle,
                       onTap: () {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => const SoilHealthCheckScreen(),
+                            builder: (context) => const SoilRecordScreen(),
                           ),
                         );
                       },

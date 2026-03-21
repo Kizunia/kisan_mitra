@@ -1722,4 +1722,113 @@ class AppLocalizationsMr extends AppLocalizations {
 
   @override
   String get soilArid => 'वाळवंटी माती';
+
+  @override
+  String get smartSoilAnalyzer => 'स्मार्ट माती विश्लेषक';
+
+  @override
+  String get smartSoilAnalyzerSubtitle =>
+      'स्मार्टफोन मायक्रोफोनने\nमातीचे विश्लेषण करा';
+
+  @override
+  String get soilRecordInstruction =>
+      'मातीत धातूची रॉड घाला आणि हलकेच टॅप करा. आवाज रेकॉर्ड करण्यासाठी फोन जवळ ठेवा.';
+
+  @override
+  String get soilStepInsert => 'घाला';
+
+  @override
+  String get soilStepTap => 'टॅप';
+
+  @override
+  String get soilStepRecord => 'रेकॉर्ड';
+
+  @override
+  String get soilTapToRecord => 'रेकॉर्डिंग सुरू करण्यासाठी टॅप करा';
+
+  @override
+  String get soilTapToStop => 'थांबवण्यासाठी टॅप करा';
+
+  @override
+  String get soilProcessing => 'प्रक्रिया सुरू आहे...';
+
+  @override
+  String get soilKeepRecording => 'रेकॉर्डिंग सुरू ठेवा...';
+
+  @override
+  String get soilCanStopNow => 'तुम्ही आता थांबवू शकता';
+
+  @override
+  String get soilAnalyzing => 'मातीचे विश्लेषण होत आहे...';
+
+  @override
+  String get soilAnalyzingSubtext =>
+      'ऑडिओ वैशिष्ट्ये काढली जात आहेत आणि माती विश्लेषण तयार केले जात आहे. थोडा वेळ लागू शकतो.';
+
+  @override
+  String get soilResultsTitle => 'माती विश्लेषण निकाल';
+
+  @override
+  String get soilAnalysisResults => 'माती विश्लेषण';
+
+  @override
+  String get soilMoistureLabel => 'ओलावा';
+
+  @override
+  String get soilMoistureLow => 'कमी';
+
+  @override
+  String get soilMoistureMedium => 'मध्यम';
+
+  @override
+  String get soilMoistureHigh => 'जास्त';
+
+  @override
+  String get soilDensityLabel => 'घनता';
+
+  @override
+  String get soilDensityLoose => 'सैल';
+
+  @override
+  String get soilDensityMedium => 'मध्यम';
+
+  @override
+  String get soilDensityCompact => 'घट्ट';
+
+  @override
+  String get soilCompactionLabel => 'दाबण्याची पातळी';
+
+  @override
+  String get soilConfidenceLabel => 'विश्लेषण विश्वासार्हता';
+
+  @override
+  String get soilWeatherContext => 'हवामान संदर्भ';
+
+  @override
+  String get soilWarnings => 'इशारे';
+
+  @override
+  String get soilFertilizerPlan => 'खत शिफारसी';
+
+  @override
+  String get soilIrrigationAdvice => 'सिंचन सल्ला';
+
+  @override
+  String get soilAnalyzeAgain => 'पुन्हा विश्लेषण करा';
+
+  @override
+  String get soilErrorMicPermission =>
+      'मायक्रोफोन परवानगी आवश्यक आहे. कृपया डिव्हाइस सेटिंग्जमध्ये प्रवेश द्या आणि पुन्हा प्रयत्न करा.';
+
+  @override
+  String get soilErrorTooShort =>
+      'रेकॉर्डिंग खूप लहान आहे. कृपया किमान 5 सेकंद रेकॉर्ड करा.';
+
+  @override
+  String get soilErrorNoSignal =>
+      'कोणताही स्पष्ट सिग्नल आढळला नाही. कृपया खात्री करा की तुम्ही मायक्रोफोनजवळ धातूची रॉड टॅप करत आहात.';
+
+  @override
+  String get soilErrorGeneral =>
+      'विश्लेषणादरम्यान काहीतरी चूक झाली. कृपया पुन्हा प्रयत्न करा.';
 }

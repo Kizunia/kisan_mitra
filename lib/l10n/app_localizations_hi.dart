@@ -1726,4 +1726,113 @@ class AppLocalizationsHi extends AppLocalizations {
 
   @override
   String get soilArid => 'शुष्क (रेगिस्तानी) मिट्टी';
+
+  @override
+  String get smartSoilAnalyzer => 'स्मार्ट मिट्टी विश्लेषक';
+
+  @override
+  String get smartSoilAnalyzerSubtitle =>
+      'स्मार्टफोन माइक्रोफोन से\nमिट्टी का विश्लेषण करें';
+
+  @override
+  String get soilRecordInstruction =>
+      'मिट्टी में एक धातु की छड़ डालें और धीरे से टैप करें। ध्वनि रिकॉर्ड करने के लिए फ़ोन को पास रखें।';
+
+  @override
+  String get soilStepInsert => 'डालें';
+
+  @override
+  String get soilStepTap => 'टैप करें';
+
+  @override
+  String get soilStepRecord => 'रिकॉर्ड';
+
+  @override
+  String get soilTapToRecord => 'रिकॉर्ड शुरू करने के लिए टैप करें';
+
+  @override
+  String get soilTapToStop => 'रोकने के लिए टैप करें';
+
+  @override
+  String get soilProcessing => 'प्रोसेसिंग...';
+
+  @override
+  String get soilKeepRecording => 'रिकॉर्डिंग जारी रखें...';
+
+  @override
+  String get soilCanStopNow => 'अब आप रोक सकते हैं';
+
+  @override
+  String get soilAnalyzing => 'मिट्टी का विश्लेषण हो रहा है...';
+
+  @override
+  String get soilAnalyzingSubtext =>
+      'ऑडियो विशेषताएं निकाली जा रही हैं और मिट्टी का विश्लेषण किया जा रहा है। कुछ समय लग सकता है।';
+
+  @override
+  String get soilResultsTitle => 'मिट्टी विश्लेषण परिणाम';
+
+  @override
+  String get soilAnalysisResults => 'मिट्टी विश्लेषण';
+
+  @override
+  String get soilMoistureLabel => 'नमी';
+
+  @override
+  String get soilMoistureLow => 'कम';
+
+  @override
+  String get soilMoistureMedium => 'मध्यम';
+
+  @override
+  String get soilMoistureHigh => 'अधिक';
+
+  @override
+  String get soilDensityLabel => 'घनत्व';
+
+  @override
+  String get soilDensityLoose => 'ढीली';
+
+  @override
+  String get soilDensityMedium => 'मध्यम';
+
+  @override
+  String get soilDensityCompact => 'सघन';
+
+  @override
+  String get soilCompactionLabel => 'संघनन स्तर';
+
+  @override
+  String get soilConfidenceLabel => 'विश्लेषण विश्वसनीयता';
+
+  @override
+  String get soilWeatherContext => 'मौसम संदर्भ';
+
+  @override
+  String get soilWarnings => 'चेतावनियाँ';
+
+  @override
+  String get soilFertilizerPlan => 'उर्वरक सिफारिशें';
+
+  @override
+  String get soilIrrigationAdvice => 'सिंचाई सलाह';
+
+  @override
+  String get soilAnalyzeAgain => 'फिर से विश्लेषण करें';
+
+  @override
+  String get soilErrorMicPermission =>
+      'माइक्रोफोन अनुमति आवश्यक है। कृपया डिवाइस सेटिंग्स में अनुमति दें और पुनः प्रयास करें।';
+
+  @override
+  String get soilErrorTooShort =>
+      'रिकॉर्डिंग बहुत छोटी है। कृपया कम से कम 5 सेकंड रिकॉर्ड करें।';
+
+  @override
+  String get soilErrorNoSignal =>
+      'कोई स्पष्ट संकेत नहीं मिला। कृपया सुनिश्चित करें कि आप धातु की छड़ को माइक्रोफोन के पास टैप कर रहे हैं।';
+
+  @override
+  String get soilErrorGeneral =>
+      'विश्लेषण के दौरान कुछ गलत हो गया। कृपया पुनः प्रयास करें।';
 }

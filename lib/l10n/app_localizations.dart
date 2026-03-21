@@ -3435,6 +3435,210 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Arid (Desert)'**
   String get soilArid;
+
+  /// No description provided for @smartSoilAnalyzer.
+  ///
+  /// In en, this message translates to:
+  /// **'Smart Soil Analyzer'**
+  String get smartSoilAnalyzer;
+
+  /// No description provided for @smartSoilAnalyzerSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Analyze soil using\nsmartphone microphone'**
+  String get smartSoilAnalyzerSubtitle;
+
+  /// No description provided for @soilRecordInstruction.
+  ///
+  /// In en, this message translates to:
+  /// **'Insert a metal rod into the soil and tap it gently. Hold your phone close to capture the sound.'**
+  String get soilRecordInstruction;
+
+  /// No description provided for @soilStepInsert.
+  ///
+  /// In en, this message translates to:
+  /// **'Insert'**
+  String get soilStepInsert;
+
+  /// No description provided for @soilStepTap.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap'**
+  String get soilStepTap;
+
+  /// No description provided for @soilStepRecord.
+  ///
+  /// In en, this message translates to:
+  /// **'Record'**
+  String get soilStepRecord;
+
+  /// No description provided for @soilTapToRecord.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap to start recording'**
+  String get soilTapToRecord;
+
+  /// No description provided for @soilTapToStop.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap to stop'**
+  String get soilTapToStop;
+
+  /// No description provided for @soilProcessing.
+  ///
+  /// In en, this message translates to:
+  /// **'Processing...'**
+  String get soilProcessing;
+
+  /// No description provided for @soilKeepRecording.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep recording...'**
+  String get soilKeepRecording;
+
+  /// No description provided for @soilCanStopNow.
+  ///
+  /// In en, this message translates to:
+  /// **'You can stop now'**
+  String get soilCanStopNow;
+
+  /// No description provided for @soilAnalyzing.
+  ///
+  /// In en, this message translates to:
+  /// **'Analyzing Soil...'**
+  String get soilAnalyzing;
+
+  /// No description provided for @soilAnalyzingSubtext.
+  ///
+  /// In en, this message translates to:
+  /// **'Extracting audio features and generating soil analysis. This may take a moment.'**
+  String get soilAnalyzingSubtext;
+
+  /// No description provided for @soilResultsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Soil Analysis Results'**
+  String get soilResultsTitle;
+
+  /// No description provided for @soilAnalysisResults.
+  ///
+  /// In en, this message translates to:
+  /// **'Soil Analysis'**
+  String get soilAnalysisResults;
+
+  /// No description provided for @soilMoistureLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Moisture'**
+  String get soilMoistureLabel;
+
+  /// No description provided for @soilMoistureLow.
+  ///
+  /// In en, this message translates to:
+  /// **'Low'**
+  String get soilMoistureLow;
+
+  /// No description provided for @soilMoistureMedium.
+  ///
+  /// In en, this message translates to:
+  /// **'Medium'**
+  String get soilMoistureMedium;
+
+  /// No description provided for @soilMoistureHigh.
+  ///
+  /// In en, this message translates to:
+  /// **'High'**
+  String get soilMoistureHigh;
+
+  /// No description provided for @soilDensityLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Density'**
+  String get soilDensityLabel;
+
+  /// No description provided for @soilDensityLoose.
+  ///
+  /// In en, this message translates to:
+  /// **'Loose'**
+  String get soilDensityLoose;
+
+  /// No description provided for @soilDensityMedium.
+  ///
+  /// In en, this message translates to:
+  /// **'Medium'**
+  String get soilDensityMedium;
+
+  /// No description provided for @soilDensityCompact.
+  ///
+  /// In en, this message translates to:
+  /// **'Compact'**
+  String get soilDensityCompact;
+
+  /// No description provided for @soilCompactionLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Compaction Level'**
+  String get soilCompactionLabel;
+
+  /// No description provided for @soilConfidenceLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Analysis Confidence'**
+  String get soilConfidenceLabel;
+
+  /// No description provided for @soilWeatherContext.
+  ///
+  /// In en, this message translates to:
+  /// **'Weather Context'**
+  String get soilWeatherContext;
+
+  /// No description provided for @soilWarnings.
+  ///
+  /// In en, this message translates to:
+  /// **'Warnings'**
+  String get soilWarnings;
+
+  /// No description provided for @soilFertilizerPlan.
+  ///
+  /// In en, this message translates to:
+  /// **'Fertilizer Recommendations'**
+  String get soilFertilizerPlan;
+
+  /// No description provided for @soilIrrigationAdvice.
+  ///
+  /// In en, this message translates to:
+  /// **'Irrigation Advice'**
+  String get soilIrrigationAdvice;
+
+  /// No description provided for @soilAnalyzeAgain.
+  ///
+  /// In en, this message translates to:
+  /// **'Analyze Again'**
+  String get soilAnalyzeAgain;
+
+  /// No description provided for @soilErrorMicPermission.
+  ///
+  /// In en, this message translates to:
+  /// **'Microphone permission is required. Please grant access in your device settings and try again.'**
+  String get soilErrorMicPermission;
+
+  /// No description provided for @soilErrorTooShort.
+  ///
+  /// In en, this message translates to:
+  /// **'Recording too short. Please record for at least 5 seconds.'**
+  String get soilErrorTooShort;
+
+  /// No description provided for @soilErrorNoSignal.
+  ///
+  /// In en, this message translates to:
+  /// **'No clear signal detected. Please ensure you are tapping the metal rod near the microphone.'**
+  String get soilErrorNoSignal;
+
+  /// No description provided for @soilErrorGeneral.
+  ///
+  /// In en, this message translates to:
+  /// **'Something went wrong during analysis. Please try again.'**
+  String get soilErrorGeneral;
 }
 
 class _AppLocalizationsDelegate
