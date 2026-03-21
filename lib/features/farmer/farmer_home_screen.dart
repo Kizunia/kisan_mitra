@@ -54,13 +54,18 @@ class _FarmerHomeScreenState extends State<FarmerHomeScreen> {
                 child: Column(
                   children: [
                     _buildActionCard(
-                      icon: Icons.search,
-                      title: AppLocalizations.of(context).fertilizerSearch,
+                      icon: Icons.mic_rounded,
+                      title: AppLocalizations.of(context).smartSoilAnalyzer,
                       subtitle: AppLocalizations.of(
                         context,
-                      ).fertilizerSearchSubtitle,
+                      ).smartSoilAnalyzerSubtitle,
                       onTap: () {
-                        widget.onNavigateToTab?.call(1);
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const SoilRecordScreen(),
+                          ),
+                        );
                       },
                     ),
                     const SizedBox(height: 16),
@@ -76,18 +81,13 @@ class _FarmerHomeScreenState extends State<FarmerHomeScreen> {
                     ),
                     const SizedBox(height: 16),
                     _buildActionCard(
-                      icon: Icons.mic_rounded,
-                      title: AppLocalizations.of(context).smartSoilAnalyzer,
+                      icon: Icons.search,
+                      title: AppLocalizations.of(context).fertilizerSearch,
                       subtitle: AppLocalizations.of(
                         context,
-                      ).smartSoilAnalyzerSubtitle,
+                      ).fertilizerSearchSubtitle,
                       onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const SoilRecordScreen(),
-                          ),
-                        );
+                        widget.onNavigateToTab?.call(1);
                       },
                     ),
                     const SizedBox(height: 16),
