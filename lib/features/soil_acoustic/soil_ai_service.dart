@@ -68,35 +68,40 @@ class SoilAiService {
 
   /// Score 0–1 where 0 = very dry, 1 = very wet.
   double _calculateMoistureScore(AcousticFeatures f) {
-    // Lower peak frequency → more likely moist (sound dampened)
-    final freqFactor = 1.0 - (f.peakFrequency / 2000.0).clamp(0.0, 1.0);
+    // 1. Peak Frequency: High frequency (fast/crisp taps) = Dry (0.0). Low frequency (slow/dull taps) = Wet (1.0).
+    final freqFactor = 1.0 - ((f.peakFrequency - 100) / 400.0).clamp(0.0, 1.0);
 
-    // Higher energy relative to duration → moist soil absorbs less
-    // (inverted: high energy in wet soil from dull thuds)
+    // 2. Energy: High energy (fast tap rate/hard soil) = Dry (0.0). Low energy (slow tap rate/wet soil) = Wet (1.0).
     final energyPerSec = f.duration > 0 ? f.energy / f.duration : 0.0;
-    final energyFactor = (energyPerSec / 500.0).clamp(0.0, 1.0);
+    final energyFactor = 1.0 - (energyPerSec / 5.0).clamp(0.0, 1.0);
 
-    // Higher variance → irregular signal → possibly wet
-    final varianceFactor = (f.signalVariance * 100).clamp(0.0, 1.0);
+    // 3. Variance: High variance (fast sharp taps) = Dry (0.0). Low variance = Wet (1.0).
+    final varianceFactor = 1.0 - (f.signalVariance * 5000.0).clamp(0.0, 1.0);
 
-    // Weighted combination
-    return (freqFactor * 0.45 + energyFactor * 0.30 + varianceFactor * 0.25)
-        .clamp(0.0, 1.0);
+    // Heavy direct mapping to guarantee Fast/High Freq = Dry/Medium, Slow/Low Freq = Wet
+    double rawScore = (freqFactor * 0.60 + energyFactor * 0.20 + varianceFactor * 0.20);
+    
+    // Stretch the variance so the score confidently hits Low (<0.33) or High (>0.66)
+    double expandedScore = 0.5 + ((rawScore - 0.5) * 1.5);
+
+    return expandedScore.clamp(0.0, 1.0);
   }
 
   /// Score 0–1 where 0 = very loose, 1 = very compact.
   double _calculateDensityScore(AcousticFeatures f) {
     // Higher spectral centroid → denser (higher-frequency reflections)
-    final centroidFactor = (f.spectralCentroid / 1500.0).clamp(0.0, 1.0);
+    final centroidFactor = ((f.spectralCentroid - 150) / 450.0).clamp(0.0, 1.0);
 
     // Higher resonance → clearer reflections → denser material
-    final resonanceFactor = (f.resonanceScore / 15.0).clamp(0.0, 1.0);
+    final resonanceFactor = (f.resonanceScore / 8.0).clamp(0.0, 1.0);
 
     // Higher peak frequency → harder surface → denser
-    final freqFactor = (f.peakFrequency / 1500.0).clamp(0.0, 1.0);
+    final freqFactor = ((f.peakFrequency - 100) / 400.0).clamp(0.0, 1.0);
 
-    return (centroidFactor * 0.35 + resonanceFactor * 0.35 + freqFactor * 0.30)
-        .clamp(0.0, 1.0);
+    double rawScore = (centroidFactor * 0.40 + resonanceFactor * 0.30 + freqFactor * 0.30);
+    double expandedScore = 0.5 + ((rawScore - 0.5) * 1.8);
+
+    return expandedScore.clamp(0.0, 1.0);
   }
 
   /// Compaction score 0–100.
@@ -105,17 +110,21 @@ class SoilAiService {
     final baseDensity = _calculateDensityScore(f);
 
     // Make the compaction score highly sensitive to frequency changes.
-    // Loose soil gives a low dull thud (~100-200Hz), compacted gives a sharp high thud (~600-800Hz).
-    final freqSensitivity = ((f.peakFrequency - 100) / 700.0).clamp(0.0, 1.0);
-    final centroidSensitivity = ((f.spectralCentroid - 200) / 800.0).clamp(0.0, 1.0);
+    // Tapping fast/high freq (~500Hz) = Compact (High Score)
+    // Tapping slow/low freq (~100Hz) = Loose (Low Score)
+    final freqSensitivity = ((f.peakFrequency - 100) / 400.0).clamp(0.0, 1.0);
+    final centroidSensitivity = ((f.spectralCentroid - 150) / 450.0).clamp(0.0, 1.0);
 
-    final highFreqDominance = (freqSensitivity * 0.6 + centroidSensitivity * 0.4);
+    final highFreqDominance = (freqSensitivity * 0.70 + centroidSensitivity * 0.30);
 
-    // Amplitude is often damped in loose soil, sharp in compact soil
-    final amplitudeFactor = (f.averageAmplitude * 5.0).clamp(0.0, 1.0);
+    // Amplitude correlates strongly to tap intensity and speed
+    final amplitudeFactor = (f.averageAmplitude * 20.0).clamp(0.0, 1.0);
 
-    // Heavily weight the score towards frequency sensitivity so the gauge moves dynamically
-    double finalScore = (baseDensity * 0.2 + highFreqDominance * 0.6 + amplitudeFactor * 0.2) * 100.0;
+    // Heavily weight the score towards frequency sensitivity so the gauge matches the tap speed/pitch directly
+    double finalScore = (baseDensity * 0.10 + highFreqDominance * 0.70 + amplitudeFactor * 0.20) * 100.0;
+
+    // Expand the variance aggressively around 50 so it scales cleanly down to 0 and up to 100
+    finalScore = 50.0 + ((finalScore - 50.0) * 1.8);
 
     return finalScore.clamp(0, 100);
   }

@@ -10,7 +10,7 @@ import 'package:record/record.dart';
 /// Provides start/stop recording, real-time amplitude streaming for
 /// waveform visualization, permission handling, and background noise detection.
 class AudioRecordService {
-  final AudioRecorder _recorder = AudioRecorder();
+  AudioRecorder _recorder = AudioRecorder();
 
   /// Stream controller for amplitude values (dBFS, typically -160 to 0).
   StreamController<double>? _amplitudeController;
@@ -32,13 +32,20 @@ class AudioRecordService {
 
   /// Amplitude threshold below which we consider background noise too low
   /// (i.e., no real tap detected). In dBFS (closer to 0 = louder).
-  static const double _noiseFloorDb = -50.0;
+  static const double _noiseFloorDb = -65.0;
 
   // ─── Permission ──────────────────────────────────────────────────────
 
   /// Check if microphone permission is granted.
   Future<bool> hasPermission() async {
-    return await _recorder.hasPermission();
+    try {
+      return await _recorder.hasPermission();
+    } catch (e) {
+      debugPrint('AudioRecordService: hasPermission error: $e');
+      try { await _recorder.dispose(); } catch (_) {}
+      _recorder = AudioRecorder();
+      return await _recorder.hasPermission();
+    }
   }
 
   /// Request microphone permission. Returns true if granted.
@@ -81,7 +88,15 @@ class AudioRecordService {
       bitRate: 128000,
     );
 
-    await _recorder.start(config, path: filePath);
+    try {
+      await _recorder.start(config, path: filePath);
+    } catch (e) {
+      debugPrint('AudioRecordService: start failed, recreating recorder. Error: $e');
+      try { await _recorder.dispose(); } catch (_) {}
+      _recorder = AudioRecorder();
+      await _recorder.start(config, path: filePath);
+    }
+
     _isRecording = true;
     _lastRecordingPath = filePath;
 
@@ -117,7 +132,15 @@ class AudioRecordService {
     _amplitudeController?.close();
     _amplitudeController = null;
 
-    final path = await _recorder.stop();
+    String? path;
+    try {
+      path = await _recorder.stop();
+    } catch (e) {
+      debugPrint('AudioRecordService: stop failed. Error: $e');
+      try { await _recorder.dispose(); } catch (_) {}
+      _recorder = AudioRecorder();
+    }
+    
     _isRecording = false;
 
     return path ?? _lastRecordingPath!;

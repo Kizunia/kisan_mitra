@@ -1,262 +1,501 @@
-# 🌾 Kisan Mitra — Smart Fertilizer Finder App
+# Kisan Mitra – Smart Agriculture Decision Support System
 
-**Kisan Mitra** (meaning *Farmer's Friend* in Hindi) is a multi-role Flutter application that bridges the gap between farmers and fertilizer stores. It enables farmers to discover nearby verified stores, receive AI-powered farming advice, and interact through a voice assistant — all in their preferred language.
-
----
-
-## 📋 Table of Contents
-
-- [Features](#features)
-- [Tech Stack](#tech-stack)
-- [Prerequisites](#prerequisites)
-- [Getting Started](#getting-started)
-- [Environment Configuration](#environment-configuration)
-- [Firebase Setup](#firebase-setup)
-- [Project Structure](#project-structure)
-- [User Roles](#user-roles)
-- [Build Commands](#build-commands)
-- [Contributing](#contributing)
-- [License](#license)
+A smart agriculture platform for farmers that combines AI-based fertilizer advisory, smartphone-based soil analysis concepts, nearby fertilizer-store discovery, and multilingual voice interaction in a single Flutter application.
 
 ---
 
-## ✨ Features
+## 1. Project title and short tagline
 
-### 🚜 Farmer
-- **Location-based fertilizer store search** - find verified stores within a 5 km radius on an interactive map
-- **Crop advisory & fertilizer recommendations** — get personalized advice for your crop and soil type
-- **Soil health assessment** — check and monitor soil health indicators
-- **AI Voice Assistant** — speak in English, Hindi, or Marathi; the assistant understands your intent and navigates the app for you
-- **Google Sign-In & email authentication**
-- **Profile management** with photo upload
+**Kisan Mitra – Smart Agriculture Decision Support System**
 
-### 🏪 Store Owner
-- **Multi-step store registration** with license verification
-- **Store location management** — pin your store on the map
-- **Inventory & stock management** — manage fertilizer listings in real time
-- **Verification status tracking** — see approval status from the admin
-
-### 👨‍💼 Admin
-- **Dashboard with live statistics** — total farmers, stores, pending verifications
-- **Store verification workflow** — approve or reject stores with reasons
-- **Farmer & store management** — search, filter, and review user accounts
-- **Fertilizer database administration** — add, edit, and remove fertilizer records
-- **Activity log & audit trail**
-- **System notifications management**
+**Tagline:** Helping farmers make better crop and fertilizer decisions using AI, local data, voice interaction, and practical agronomic guidance.
 
 ---
 
-## 🛠 Tech Stack
+## 2. Project overview
 
-| Category | Technology |
-|----------|-----------|
-| Framework | Flutter (Dart) |
-| UI | Material Design 3, Google Fonts |
-| Backend | Firebase (Auth, Firestore, Storage) |
-| State Management | Provider |
-| Maps | Mapbox Maps Flutter, Flutter Map (OpenStreetMap) |
-| Location | Geolocator, Geocoding |
-| AI | Google Generative AI (Gemini) |
-| Voice | Speech-to-Text, Flutter TTS, ElevenLabs |
-| Localization | Flutter Intl (English, Hindi, Marathi) |
-| Networking | http, connectivity_plus |
+Kisan Mitra is designed to help farmers make informed decisions related to fertilizer use, soil condition, nearby input availability, and crop management support. The app brings together several capabilities:
+
+- AI-based fertilizer recommendation using structured agronomic inputs
+- Soil analysis support based on acoustic sensing concepts
+- Nearby fertilizer store discovery with location-aware ranking
+- Voice-first, multilingual interaction in English, Hindi, and Marathi
+- Weather-aware advisory support integrated into the farmer workflow
+
+The project reflects the evolution from a basic fertilizer-store finder toward an integrated agriculture decision support system that combines decision support, agricultural assistance, and local discovery within one mobile platform.
 
 ---
 
-## 🔧 Prerequisites
+## 3. Problem statement
 
-- [Flutter SDK](https://docs.flutter.dev/get-started/install) ≥ 3.10.8
-- Dart SDK (bundled with Flutter)
-- Android Studio / VS Code with Flutter & Dart plugins
-- A Firebase project (see [Firebase Setup](#firebase-setup))
-- A [Mapbox](https://www.mapbox.com/) account and access token
-- (Optional) Google Generative AI / OpenAI API key for the voice assistant
+Farmers often need to make decisions with limited access to reliable agronomic support, soil diagnostics, and local input availability. The common challenges include:
+
+- uncertainty around fertilizer type and dosage
+- limited access to soil condition insights
+- difficulty finding nearby stores with the required fertilizers
+- language barriers in app interfaces and agricultural decision support
+- lack of simple, mobile-first tools that can guide farmers in local languages
+
+A practical agriculture assistance platform should make these decisions more accessible, understandable, and actionable for farmers without requiring advanced laboratory tools or technical expertise.
 
 ---
 
-## 🚀 Getting Started
+## 4. Proposed solution
 
-### 1. Clone the repository
+Kisan Mitra proposes a unified platform that supports farmers through multiple pathways:
 
-```bash
-git clone https://github.com/CodeBySatyajit/kisan_mitra.git
-cd kisan_mitra
+1. Structured recommendation engine for fertilizer choice and application guidance
+2. Acoustic soil sensing prototype for quick field-level soil estimation
+3. Local fertilizer-store search and ranking based on market availability and proximity
+4. Multilingual AI assistant that can understand voice commands and trigger app actions
+5. Weather-aware recommendations to improve context before fertilizer or irrigation decisions
+
+The system is intended to support decisions in a farmer-friendly, low-friction format using a mobile application.
+
+---
+
+## 5. Key features
+
+### Implemented / active in the app
+
+- Firebase-based authentication and user management
+- Farmer and store workflows with role-based app structure
+- Fertilizer store discovery using map and location-based search
+- Weather-aware advisory support
+- AI voice assistant for navigation and guidance
+- Multilingual support via Flutter localization
+- Business logic for store and fertilizer data management in Firebase
+
+### Prototype / experimental
+
+- Acoustic soil analysis concept for smartphone audio-based sensing
+- Soil estimation for moisture, density, and compaction
+- On-device or edge inference concept using TensorFlow Lite / CNN models
+- AI-generated natural-language explanation tied to acoustic soil results
+
+### Planned / future direction
+
+- Full continuous-learning loop from farmer feedback and agronomic outcomes
+- Larger calibration dataset for agricultural soil sensing
+- Broader field validation across soil types and crop conditions
+- Deeper AI function-calling integration for voice-driven agricultural actions
+
+---
+
+## 6. System architecture
+
+```mermaid
+flowchart LR
+    A[Farmer] --> B[Flutter Mobile App]
+    B --> C[AI Fertilizer Advisory]
+    B --> D[Acoustic Soil Analysis]
+    B --> E[Store Finder & Map Search]
+    B --> F[Multilingual Voice Assistant]
+
+    C --> G[Structured Features]
+    G --> H[XGBoost Recommendation Model]
+    H --> I[Gemini Explanation Layer]
+
+    D --> J[Waveform / FFT Features]
+    J --> K[Prototype Soil Estimation]
+    K --> L[Moisture / Density / Compaction Outputs]
+
+    E --> M[Firebase Firestore Data]
+    E --> N[Mapbox / Location Services]
+
+    F --> O[Speech-to-Text + Gemini + TTS]
+
+    B --> P[Firebase Auth / Firestore / Storage]
+    C --> Q[Weather Data Service]
 ```
 
-### 2. Install dependencies
+This architecture reflects the repository layout: Flutter app front-end, Firebase services for authentication and storage, map/location services for store discovery, and Gemini-based AI workflows for advisory and voice interaction.
+
+---
+
+## 7. End-to-end workflow
+
+1. The farmer opens the app and selects their role.
+2. They enter or provide crop, soil, and location information.
+3. The advisory workflow combines agricultural context with weather and local conditions.
+4. The recommendation engine suggests fertilizer type and dosage guidance using structured fields.
+5. Gemini generates a simple, farmer-friendly explanation of the recommendation.
+6. If the farmer needs local availability, the app helps locate nearby fertilizer stores.
+7. If a soil check is required, the acoustic analysis flow can process microphone-based data as a prototype soil estimate.
+8. The voice assistant can help trigger actions such as fertilizer search, advisory retrieval, soil-analysis initiation, and navigation where implemented.
+
+---
+
+## 8. AI/ML methodology
+
+### Recommendation model
+
+The current project direction uses a structured ML approach for fertilizer recommendation.
+
+- Input features include:
+  - crop type
+  - soil NPK values
+  - soil pH
+  - location
+  - weather conditions
+- The model concept is based on **XGBoost** for fertilizer type and dosage prediction.
+- The model is used to generate structured recommendation output based on agronomic features.
+- **Google Gemini is used as a second layer to explain the recommendation in a simple, understandable farmer-friendly format.**
+- The LLM should explain the recommendation rather than independently determine the fertilizer dosage.
+
+### Design principle
+
+This separation is important:
+
+- XGBoost handles the structured data-driven recommendation logic.
+- Gemini explains the recommendation in plain language for agricultural users.
+- The system should not rely on an LLM to make the final dosage decision without the structured model output.
+
+---
+
+## 9. Acoustic soil analysis methodology
+
+This is a key prototype area in the project and should be considered experimental.
+
+### Conceptual approach
+
+The repository includes a soil-acoustic feature aimed at estimating field soil properties using smartphone-based sensing. The concept includes:
+
+- smartphone microphone/speaker-based soil analysis
+- acoustic chirp sensing such as FMCW-style methods
+- metal-rod impact acoustic sensing
+- waveform and FFT-based signal processing
+- TensorFlow Lite / CNN concept for on-device inference
+
+### Intended outputs
+
+The project aims to estimate:
+
+- soil moisture
+- soil density
+- soil compaction
+
+### Important note
+
+This feature is best described as **prototype / experimental** and requires calibration and validation against reference soil measurements before being treated as a field-accurate diagnostic tool. The repository does not present laboratory-validated accuracy claims or a complete field-validated soil model.
+
+---
+
+## 10. Fertilizer store ranking algorithm
+
+The project is designed to help farmers find the best nearby store for required fertilizer inputs. The latest platform direction uses a weighted scoring model for store recommendation.
+
+### Recommended ranking formula
+
+- Price: 40%
+- Distance: 30%
+- Stock availability: 20%
+- Rating: 10%
+
+### Interpretation
+
+- lower price is preferred
+- shorter distance is preferred
+- available stock increases confidence in immediate purchase
+- stronger user rating adds confidence to the shop recommendation
+
+The model produces a “Best Shop” recommendation based on the weighted score, with map-based discovery supporting local navigation and selection.
+
+> Note: the repository currently contains a ranking implementation with a different relative weight distribution, but the latest project description reflects the upgraded platform concept described above.
+
+---
+
+## 11. Multilingual voice assistant
+
+Kisan Mitra includes a voice-first interaction layer intended for farmers in rural and semi-urban settings.
+
+### Supported languages
+
+- English
+- Hindi
+- Marathi
+
+### Voice capabilities
+
+- Speech-to-Text
+- Google Gemini for intent understanding and conversational response
+- Gemini Function Calling / Google ADK concept for action-oriented interactions
+- Flutter TTS for response playback
+- ElevenLabs as an optional advanced voice synthesis path
+
+### Functional role
+
+The voice assistant is intended to act as an interface capable of triggering application functions such as:
+
+- fertilizer search
+- advisory retrieval
+- soil-analysis initiation
+- store navigation
+- general agricultural guidance
+
+The voice assistant is meant to reduce friction for users who prefer speaking rather than entering text manually.
+
+---
+
+## 12. Technology stack
+
+### Mobile
+
+- Flutter (Dart)
+
+### UI
+
+- Material Design 3
+- Google Fonts
+
+### Backend / Cloud
+
+- Firebase Authentication
+- Firebase Firestore
+- Firebase Storage
+
+
+### ML
+
+- Python
+- scikit-learn
+- XGBoost
+
+### Edge ML
+
+- TensorFlow Lite
+- CNN concept for acoustic soil analysis
+
+### AI
+
+- Google Gemini
+- Gemini Function Calling
+- Google ADK concept
+
+### Voice
+
+- Google Speech-to-Text
+- Flutter TTS
+- ElevenLabs
+
+### Localization
+
+- Flutter Intl
+- English
+- Hindi
+- Marathi
+
+### Maps / Location
+
+- Mapbox Maps Flutter
+- Flutter Map
+- OpenStreetMap
+- Geolocator
+- Geocoding
+
+### Weather
+
+- OpenWeather API
+
+---
+
+## 13. User roles
+
+| Role | Purpose |
+|------|---------|
+| Farmer | Access recommendations, find stores, use advisory features, interact through voice assistant |
+| Store owner | Manage fertilizer inventory, store location, and stock information |
+| Admin | Oversee platform data, verification workflow, and operational management |
+
+The repository contains role-based screens and flows for farmers, stores, and administrators.
+
+---
+
+## 14. Project evolution
+
+The project has evolved from the earlier concept of a basic fertilizer-store finder into a more complete agricultural support platform.
+
+### Original direction
+
+- fertilizer availability
+- nearby store discovery
+- basic crop and advisory support
+
+### Current direction
+
+- AI-backed fertilizer recommendation
+- weather-aware support
+- soil analysis prototype
+- multilingual voice interaction
+- broader decision support for farmers
+
+This evolution reflects the project’s transition from a simple marketplace-oriented app into a Smart Agriculture Decision Support System.
+
+---
+
+## 15. Project structure
+
+The repository structure is consistent with a Flutter multi-role application and includes the following major areas:
+
+```text
+kisan_mitra/
+├── lib/
+│   ├── core/
+│   │   ├── constants/
+│   │   ├── controllers/
+│   │   ├── localization/
+│   │   ├── services/
+│   │   ├── utils/
+│   │   └── widgets/
+│   ├── features/
+│   │   ├── admin/
+│   │   ├── auth/
+│   │   ├── farmer/
+│   │   ├── soil_acoustic/
+│   │   └── store/
+│   ├── l10n/
+│   └── main.dart
+├── android/
+├── ios/
+├── web/
+├── windows/
+├── linux/
+├── macos/
+├── assets/
+├── test/
+├── firebase_options.dart
+├── firestore.indexes.json
+├── firestore.rules
+├── pubspec.yaml
+├── analysis_options.yaml
+├── l10n.yaml
+├── README.md
+└── .env
+```
+
+This structure supports the application’s modular role-based architecture and the presence of separate farmer, store, admin, and acoustic-analysis components.
+
+---
+
+## 16. Setup and installation instructions
+
+### Prerequisites
+
+- Flutter SDK 3.10.8 or later
+- Dart SDK bundled with Flutter
+- Android Studio or VS Code with Flutter and Dart support
+- Firebase project access
+- Mapbox access token for map features
+- API keys for Gemini and voice services as required by the project configuration
+
+### Install dependencies
 
 ```bash
 flutter pub get
 ```
 
-### 3. Configure environment variables
-
-```bash
-cp .env.example .env
-```
-
-Edit `.env` and fill in your credentials (see [Environment Configuration](#environment-configuration)).
-
-### 4. Add Firebase configuration
-
-- Place your `google-services.json` in `android/app/`
-- Place your `GoogleService-Info.plist` in `ios/Runner/`
-
-(See [Firebase Setup](#firebase-setup) for detailed steps.)
-
-### 5. Run the app
+### Run the app
 
 ```bash
 flutter run
 ```
 
----
-
-## ⚙️ Environment Configuration
-
-Create a `.env` file in the project root (you can copy `.env.example` as a starting point):
-
-```env
-MAPBOX_ACCESS_TOKEN=your_mapbox_token_here
-OPENAI_API_KEY=your_openai_key_here   # optional - used for premium voice assistant
-```
-
-| Variable | Required | Description |
-|----------|----------|-------------|
-| `MAPBOX_ACCESS_TOKEN` | ✅ Yes | Renders the interactive map for store discovery |
-| `OPENAI_API_KEY` | ❌ No | Enables premium OpenAI voice responses (falls back to Gemini/TTS) |
-
-> **Security:** The `.env` file is listed in `.gitignore`. Never commit real credentials.
-
----
-
-## 🔥 Firebase Setup
-
-1. Create a project at [Firebase Console](https://console.firebase.google.com/).
-2. Enable the following services:
-   - **Authentication** — Email/Password and Google Sign-In providers
-   - **Cloud Firestore** — in production mode
-   - **Firebase Storage**
-3. Register your Android app and download `google-services.json` into `android/app/`.
-4. Register your iOS app and download `GoogleService-Info.plist` into `ios/Runner/`.
-5. Add the **SHA-1 fingerprint** of your signing key to the Firebase Android app (required for Google Sign-In):
+### Generate localization files
 
 ```bash
-# Run get_sha1.bat (Windows) or:
-keytool -list -v -keystore ~/.android/debug.keystore -alias androiddebugkey -storepass android -keypass android
-```
-
-6. Deploy Firestore security rules:
-
-```bash
-firebase deploy --only firestore:rules
-```
-
-7. Create the required Firestore composite index for admin queries (follow the link in the Firebase error log the first time you run the admin dashboard, or deploy `firestore.indexes.json`):
-
-```bash
-firebase deploy --only firestore:indexes
-```
-
-### Firestore Collections
-
-| Collection | Description |
-|-----------|-------------|
-| `users` | Farmer accounts |
-| `stores` | Store owner accounts (includes verification status) |
-| `admins` | Admin accounts |
-| `fertilizers` | Fertilizer master data |
-| `store_fertilizers` | Per-store inventory |
-
----
-
-## 📂 Project Structure
-
-```
-kisan_mitra/
-├── lib/
-│   ├── core/
-│   │   ├── constants/        # App-wide configuration & route names
-│   │   ├── controllers/      # AI assistant controller
-│   │   ├── localization/     # Localization helpers (EN, HI, MR)
-│   │   ├── services/         # Auth, Firestore, AI, Voice, Map services
-│   │   ├── utils/            # Theme, helpers, permission utilities
-│   │   └── widgets/          # Shared UI components
-│   ├── features/
-│   │   ├── auth/             # Splash, role selection, login, signup
-│   │   ├── farmer/
-│   │   │   ├── advisory/     # Crop advisory & fertilizer recommendations
-│   │   │   ├── dashboard/    # Farmer home screen
-│   │   │   ├── fertilizer_search/  # Map-based store finder
-│   │   │   ├── profile/      # User profile & settings
-│   │   │   └── soil_health/  # Soil health checker
-│   │   ├── store/
-│   │   │   ├── auth/         # Store registration & login
-│   │   │   ├── dashboard/    # Store inventory dashboard
-│   │   │   ├── location/     # Store location management
-│   │   │   └── stock/        # Stock management
-│   │   └── admin/
-│   │       ├── dashboard/    # Admin overview & stats
-│   │       ├── farmers/      # Farmer management
-│   │       ├── stores/       # Store verification & management
-│   │       ├── reports/      # Data reports
-│   │       ├── activity/     # Activity log
-│   │       └── notifications/ # System notifications
-│   ├── l10n/                 # ARB localization files
-│   └── main.dart             # App entry point, routing & theming
-├── android/                  # Android native code
-├── ios/                      # iOS native code
-├── web/                      # Web platform support
-├── test/                     # Unit & integration tests
-├── assets/images/            # Images & icons
-├── firestore.rules           # Firestore security rules
-├── firestore.indexes.json    # Composite index definitions
-├── l10n.yaml                 # Localization configuration
-└── pubspec.yaml              # Flutter dependencies
-```
-
----
-
-## 👥 User Roles
-
-| Role | Access | How to Get Access |
-|------|--------|-------------------|
-| **Farmer** | Fertilizer search, advisory, soil health, voice assistant | Register a new account in the app |
-| **Store Owner** | Store registration, inventory management, verification status | Register a new store in the app |
-| **Admin** | Full platform management | Contact the project administrator |
-
----
-
-## 🏗 Build Commands
-
-```bash
-# Run in debug mode
-flutter run
-
-# Run on a specific device
-flutter run -d <device_id>
-
-# Build release APK (Android)
-flutter build apk --release
-
-# Build App Bundle for Play Store
-flutter build appbundle --release
-
-# Build for iOS
-flutter build ios --release
-
-# Clean build artifacts
-flutter clean && flutter pub get
-
-# Generate localization files
 flutter gen-l10n
 ```
 
+### Build for Android
+
+```bash
+flutter build apk --release
+```
+
 ---
 
-## 🌐 Localization
+## 17. Environment variables / API configuration
 
-The app supports three languages:
+The project uses Flutter environment loading and includes configuration values in a project-root `.env` file. The repository currently contains the following relevant values:
+
+```env
+GEMINI_API_KEY=your_gemini_api_key
+ELEVEN_LABS_API_KEY=your_elevenlabs_key
+```
+
+Additional actual repository facts:
+
+- `flutter_dotenv` is included in the app dependencies and the project loads `.env` values at runtime.
+- Mapbox access is configured in the Android app resources, including `android/app/src/main/res/values/strings.xml`.
+- The app code also checks for `OPENAI_API_KEY` as a fallback in the AI service, but the main repository configuration seen here uses Gemini and ElevenLabs keys.
+- The weather service currently contains an OpenWeather API key constant in the code, which should be externalized for production use.
+
+> Security note: environment files and private keys should never be committed to shared repositories.
+
+---
+
+## 18. Current implementation status
+
+### Implemented
+
+- Flutter mobile application with role-based navigation
+- Firebase-based authentication and data persistence
+- Farmer dashboard and advisory workflow
+- Map-based fertilizer store search
+- Weather-aware advisory logic
+- Multilingual localization support
+- AI voice assistant integration using Gemini and TTS
+- Firebase-admin store and fertilizer management flows
+
+### Prototype / experimental
+
+- acoustic soil analysis with waveform/FFT-based feature processing
+- soil moisture, density, and compaction estimation concept
+- TensorFlow Lite / CNN-based edge inference concept
+- AI explanation layer for soil results and recommendations
+
+### Planned / future
+
+- stronger field calibration for soil acoustic features
+- larger real-world validation set
+- feedback-driven model improvement using farmer outcomes
+- more advanced voice function calling and assistant actions
+- continuous improvement pipeline based on soil, weather, and agronomic feedback
+
+---
+
+## 19. Limitations
+
+- Acoustic soil analysis is still an experimental prototype and should not be treated as a validated laboratory-grade measurement system.
+- The project requires reliable access to Mapbox, Firebase, Gemini, and weather-service configuration for full feature operation.
+- The advisory system is intended to support decision-making, but crop and fertilizer planning still requires agronomic validation and localized knowledge.
+- The project is a student / hackathon-style technical platform and should be considered an evolving research and product prototype rather than a fully field-certified agronomy system.
+
+---
+
+## 20. Future scope
+
+The roadmap for Kisan Mitra includes:
+
+- integrating more robust field-level agronomic recommendations
+- expanding soil sensing with calibrated reference datasets
+- improving multilingual voice actions and regional language support
+- linking crop outcomes, farmer feedback, soil data, and weather data for iterative improvement
+- building a stronger local-market ecosystem for fertilizer recommendations and store discovery
+
+A long-term direction could include a continuous improvement mechanism in which real farm outcomes inform future recommendation quality, but this should be treated as a future engineering goal rather than an already deployed automatic learning pipeline.
+
+---
+
+## 21. Team / project information
+
+No dedicated team or institutional project information is present in the current repository README beyond the product description itself. This project is presented as a technical agriculture platform built around the Kisan Mitra concept.
+
+---
+
+## Summary
+
+Kisan Mitra is a modern agriculture decision-support application that evolves beyond a simple fertilizer finder into a platform for advisory, store discovery, and voice-enabled farmer assistance. Its core strengths are the fusion of structured agronomic recommendation logic, weather-aware support, map-based store discovery, multilingual voice interaction, and an experimental acoustic soil-analysis workflow. The system is well aligned with a practical smart-farming use case while clearly separating implemented features from prototype and future work.
 
 | Language | Code |
 |----------|------|

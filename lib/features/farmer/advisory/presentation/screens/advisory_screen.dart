@@ -1201,79 +1201,7 @@ class AdvisoryScreen extends StatelessWidget {
             if (val != null) controller.setSoilType(val);
           },
         ),
-        // Add more sophisticated inputs here later (N, P, K sliders/inputs)
-        const SizedBox(height: 16),
-        Row(
-          children: [
-            Expanded(
-              child: _buildNutrientInput(
-                context,
-                AppLocalizations.of(context).nitrogen,
-                controller.nitrogen,
-                (val) => controller.setNitrogen(val),
-              ),
-            ),
-            const SizedBox(width: 16),
-            Expanded(
-              child: _buildNutrientInput(
-                context,
-                AppLocalizations.of(context).phosphorus,
-                controller.phosphorus,
-                (val) => controller.setPhosphorus(val),
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 16),
-        Row(
-          children: [
-            Expanded(
-              child: _buildNutrientInput(
-                context,
-                AppLocalizations.of(context).potassium,
-                controller.potassium,
-                (val) => controller.setPotassium(val),
-              ),
-            ),
-            const SizedBox(width: 16),
-            Expanded(
-              child: _buildNutrientInput(
-                context,
-                AppLocalizations.of(context).phLevel,
-                controller.ph,
-                (val) => controller.setPh(val),
-                isPh: true,
-              ),
-            ),
-          ],
-        ),
       ],
-    );
-  }
-
-  Widget _buildNutrientInput(
-    BuildContext context,
-    String label,
-    double? value,
-    Function(double?) onChanged, {
-    bool isPh = false,
-  }) {
-    return TextFormField(
-      decoration: InputDecoration(
-        labelText: label,
-        hintText: isPh ? "0.0 - 14.0" : "kg/acre",
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-        contentPadding: const EdgeInsets.symmetric(
-          horizontal: 16,
-          vertical: 12,
-        ),
-      ),
-      keyboardType: const TextInputType.numberWithOptions(decimal: true),
-      initialValue: value?.toString() ?? '',
-      onChanged: (val) {
-        final d = double.tryParse(val);
-        onChanged(d);
-      },
     );
   }
 
@@ -1649,3 +1577,5 @@ class AdvisoryScreen extends StatelessWidget {
     );
   }
 }
+
+
