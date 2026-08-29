@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:latlong2/latlong.dart';
@@ -6,10 +7,13 @@ import 'fertilizer_search_model.dart';
 import 'geo_service.dart';
 import 'ranking_service.dart';
 import 'mapbox_service.dart';
+import '../../../core/services/auth_service.dart';
 import '../../../core/constants/app_constants.dart';
 import '../../../core/services/firestore_service.dart'; // Assuming this exists
+import 'rating_utils.dart';
 
 class FertilizerSearchController extends ChangeNotifier {
+  final AuthService _authService = AuthService();
   final GeoService _geoService = GeoService();
   final RankingService _rankingService = RankingService();
   final MapboxService _mapboxService = MapboxService();
@@ -174,10 +178,15 @@ class FertilizerSearchController extends ChangeNotifier {
           isEqualTo: _selectedFertilizer!.id,
         );
       } catch (e) {
-        _error = 'Error querying stock: $e';
-        _isLoading = false;
-        notifyListeners();
-        return;
+        if (e.toString().contains('permission-denied') || e.toString().contains('permission denied')) {
+          print('DEBUG: Ignoring permission error for stock query and using fallback');
+          stockData = {'success': true, 'documents': []};
+        } else {
+          _error = 'Error querying stock: $e';
+          _isLoading = false;
+          notifyListeners();
+          return;
+        }
       }
 
       // Secondary Strategy: Query by Fertilizer Name (Fallback)
@@ -462,5 +471,84 @@ class FertilizerSearchController extends ChangeNotifier {
       'centerLat': (minLat + maxLat) / 2,
       'centerLng': (minLng + maxLng) / 2,
     };
+  }
+
+  Future<Map<String, dynamic>> rateStore(Store store, double newRating) async {
+    final userId = _authService.currentUserId;
+    if (userId == null) {
+      _error = 'Please sign in to rate stores.';
+      notifyListeners();
+      return {'success': false, 'message': _error};
+    }
+
+    if (newRating < 1 || newRating > 5) {
+      _error = 'Rating must be between 1 and 5 stars.';
+      notifyListeners();
+      return {'success': false, 'message': _error};
+    }
+
+    _isLoading = true;
+    notifyListeners();
+    try {
+      final db = FirebaseFirestore.instance;
+      final storeRef = db.collection(AppConstants.storesCollection).doc(store.id);
+      final ratingRef = storeRef.collection('ratings').doc(userId);
+
+      await db.runTransaction((transaction) async {
+        final storeSnapshot = await transaction.get(storeRef);
+        if (!storeSnapshot.exists) {
+          throw Exception('Store not found');
+        }
+
+        final storeData = storeSnapshot.data() as Map<String, dynamic>? ?? const {};
+        final double currentRating = (storeData['rating'] as num?)?.toDouble() ?? store.rating;
+        final int currentReviews = (storeData['totalReviews'] as num?)?.toInt() ?? store.totalReviews;
+        final double currentRatingSum = (storeData['ratingSum'] as num?)?.toDouble() ??
+            (currentReviews > 0 ? currentRating * currentReviews : 0.0);
+
+        final ratingSnapshot = await transaction.get(ratingRef);
+        final double? previousUserRating = ratingSnapshot.exists
+            ? (ratingSnapshot.data()?['rating'] as num?)?.toDouble()
+            : null;
+
+        final updated = calculateStoreRatingUpdate(
+          currentRating: currentRating,
+          currentReviews: currentReviews,
+          currentRatingSum: currentRatingSum,
+          newRating: newRating,
+          previousUserRating: previousUserRating,
+        );
+
+        transaction.set(
+          ratingRef,
+          {
+            'storeId': store.id,
+            'userId': userId,
+            'rating': newRating,
+            'updatedAt': FieldValue.serverTimestamp(),
+            if (!ratingSnapshot.exists) 'createdAt': FieldValue.serverTimestamp(),
+          },
+          SetOptions(merge: true),
+        );
+
+        transaction.update(storeRef, {
+          'rating': updated.rating,
+          'totalReviews': updated.totalReviews,
+          'ratingSum': updated.ratingSum,
+          'updatedAt': FieldValue.serverTimestamp(),
+        });
+      });
+
+      if (_selectedFertilizer != null) {
+        await searchFertilizer(_selectedFertilizer!.name);
+      }
+      return {'success': true, 'message': 'Store rated successfully'};
+    } catch (e) {
+      _error = 'Failed to submit rating: $e';
+      return {'success': false, 'message': _error};
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
   }
 }

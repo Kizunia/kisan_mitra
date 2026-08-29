@@ -176,7 +176,10 @@ class Store {
       latitude: lat,
       longitude: lng,
       rating: (data['rating'] as num?)?.toDouble() ?? 0.0,
-      totalReviews: (data['total_reviews'] as num?)?.toInt() ?? 0,
+      totalReviews:
+          (data['totalReviews'] as num?)?.toInt() ??
+          (data['total_reviews'] as num?)?.toInt() ??
+          0,
       isVerified: isVerified,
       stock: (data['stock'] as List?)?.map((e) => e.toString()).toList() ?? [],
       priceList: prices,

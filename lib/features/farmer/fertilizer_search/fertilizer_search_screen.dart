@@ -3,6 +3,7 @@ import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart';
 import 'dart:ui' as ui;
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
+import '../../../core/services/auth_service.dart';
 import '../profile/profile_controller.dart';
 import 'fertilizer_search_controller.dart';
 import 'fertilizer_search_model.dart';
@@ -22,6 +23,7 @@ class FertilizerSearchScreen extends StatefulWidget {
 class _FertilizerSearchScreenState extends State<FertilizerSearchScreen> {
   final TextEditingController _searchController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
+  final AuthService _authService = AuthService();
   MapboxMap? _mapboxMap;
   PointAnnotationManager? _pointAnnotationManager;
   PolylineAnnotationManager? _polylineAnnotationManager;
@@ -166,6 +168,92 @@ class _FertilizerSearchScreenState extends State<FertilizerSearchScreen> {
   void _removeOverlay() {
     _overlayEntry?.remove();
     _overlayEntry = null;
+  }
+
+  void _showRatingDialog(BuildContext context, StoreSearchResult result) {
+    double _rating = 0;
+    showDialog(
+      context: context,
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return AlertDialog(
+              title: Text('Rate ${result.store.storeName}'),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Text('How was your experience with this store?'),
+                  const SizedBox(height: 16),
+                  FittedBox(
+                    fit: BoxFit.scaleDown,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: List.generate(5, (index) {
+                        return IconButton(
+                          icon: Icon(
+                            index < _rating ? Icons.star : Icons.star_border,
+                            color: Colors.amber,
+                            size: 32,
+                          ),
+                          onPressed: () {
+                            setState(() {
+                              _rating = index + 1.0;
+                            });
+                          },
+                        );
+                      }),
+                    ),
+                  ),
+                ],
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text('Cancel'),
+                ),
+                ElevatedButton(
+                  onPressed: _rating > 0
+                      ? () async {
+                          Navigator.pop(context);
+
+                          if (_authService.currentUserId == null) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text('Please sign in to rate stores.'),
+                                backgroundColor: Colors.red,
+                              ),
+                            );
+                            return;
+                          }
+
+                          final resultData = await _controller.rateStore(
+                            result.store,
+                            _rating,
+                          );
+                          final success = resultData['success'] == true;
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text(
+                                success
+                                    ? 'Rating submitted successfully!'
+                                    : (resultData['message']?.toString() ??
+                                          'Failed to submit rating'),
+                              ),
+                              backgroundColor: success
+                                  ? AppColors.success
+                                  : Colors.red,
+                            ),
+                          );
+                        }
+                      : null,
+                  child: const Text('Submit'),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
   }
 
   void _fitRouteBounds() {
@@ -1043,348 +1131,364 @@ class _FertilizerSearchScreenState extends State<FertilizerSearchScreen> {
                                           controller.bestShop?.store.id ==
                                           result.store.id;
 
-                                      return Container(
-                                        margin: const EdgeInsets.only(
-                                          bottom: 12,
-                                        ),
-                                        padding: const EdgeInsets.all(12),
-                                        decoration: BoxDecoration(
-                                          color: Colors.white,
-                                          borderRadius: BorderRadius.circular(
-                                            16,
+                                      return GestureDetector(
+                                        onTap: () =>
+                                            _showRatingDialog(context, result),
+                                        child: Container(
+                                          margin: const EdgeInsets.only(
+                                            bottom: 12,
                                           ),
-                                          border: Border.all(
-                                            color: isBest
-                                                ? const Color(
-                                                    0xFFFFAB00,
-                                                  ) // Gold for best
-                                                : const Color(
-                                                    0xFF43A047,
-                                                  ), // Green for regular stores
-                                            width:
-                                                2.0, // Same width as best store
-                                          ),
-                                          boxShadow: [
-                                            BoxShadow(
-                                              color: Colors.black.withOpacity(
-                                                0.03,
-                                              ),
-                                              blurRadius: 8,
-                                              offset: const Offset(0, 2),
+                                          padding: const EdgeInsets.all(12),
+                                          decoration: BoxDecoration(
+                                            color: Colors.white,
+                                            borderRadius: BorderRadius.circular(
+                                              16,
                                             ),
-                                          ],
-                                        ),
-                                        child: Row(
-                                          children: [
-                                            Expanded(
-                                              child: Column(
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.start,
-                                                children: [
-                                                  Row(
-                                                    children: [
-                                                      Flexible(
-                                                        child: Text(
-                                                          result
-                                                              .store
-                                                              .storeName,
-                                                          style:
-                                                              const TextStyle(
-                                                                fontSize: 15,
+                                            border: Border.all(
+                                              color: isBest
+                                                  ? const Color(
+                                                      0xFFFFAB00,
+                                                    ) // Gold for best
+                                                  : const Color(
+                                                      0xFF43A047,
+                                                    ), // Green for regular stores
+                                              width:
+                                                  2.0, // Same width as best store
+                                            ),
+                                            boxShadow: [
+                                              BoxShadow(
+                                                color: Colors.black.withOpacity(
+                                                  0.03,
+                                                ),
+                                                blurRadius: 8,
+                                                offset: const Offset(0, 2),
+                                              ),
+                                            ],
+                                          ),
+                                          child: Row(
+                                            children: [
+                                              Expanded(
+                                                child: Column(
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.start,
+                                                  children: [
+                                                    Row(
+                                                      children: [
+                                                        Flexible(
+                                                          child: Text(
+                                                            result
+                                                                .store
+                                                                .storeName,
+                                                            style:
+                                                                const TextStyle(
+                                                                  fontSize: 15,
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .bold,
+                                                                ),
+                                                            overflow:
+                                                                TextOverflow
+                                                                    .ellipsis,
+                                                            maxLines: 1,
+                                                          ),
+                                                        ),
+                                                        if (result
+                                                            .store
+                                                            .isVerified) ...[
+                                                          const SizedBox(
+                                                            width: 4,
+                                                          ),
+                                                          const Icon(
+                                                            Icons.verified,
+                                                            color: Colors.blue,
+                                                            size: 14,
+                                                          ),
+                                                        ],
+                                                        if (isBest) ...[
+                                                          const SizedBox(
+                                                            width: 8,
+                                                          ),
+                                                          Container(
+                                                            padding:
+                                                                const EdgeInsets.symmetric(
+                                                                  horizontal: 6,
+                                                                  vertical: 2,
+                                                                ),
+                                                            decoration: BoxDecoration(
+                                                              color:
+                                                                  const Color(
+                                                                    0xFFFFAB00,
+                                                                  ),
+                                                              borderRadius:
+                                                                  BorderRadius.circular(
+                                                                    4,
+                                                                  ),
+                                                            ),
+                                                            child: const Text(
+                                                              'BEST SHOP',
+                                                              style: TextStyle(
+                                                                fontSize: 8,
                                                                 fontWeight:
                                                                     FontWeight
                                                                         .bold,
+                                                                color: Colors
+                                                                    .white,
                                                               ),
-                                                          overflow: TextOverflow
-                                                              .ellipsis,
-                                                          maxLines: 1,
+                                                            ),
+                                                          ),
+                                                        ],
+                                                      ],
+                                                    ),
+
+                                                    const SizedBox(height: 4),
+                                                    Wrap(
+                                                      crossAxisAlignment:
+                                                          WrapCrossAlignment
+                                                              .center,
+                                                      spacing: 2,
+                                                      runSpacing: 4,
+                                                      children: [
+                                                        const Icon(
+                                                          Icons.star,
+                                                          size: 12,
+                                                          color: Colors.amber,
                                                         ),
-                                                      ),
-                                                      if (result
-                                                          .store
-                                                          .isVerified) ...[
+                                                        Text(
+                                                          '${result.store.rating} (${result.store.totalReviews})',
+                                                          style: const TextStyle(
+                                                            fontSize: 11,
+                                                            color: AppColors
+                                                                .textSecondary,
+                                                          ),
+                                                        ),
                                                         const SizedBox(
-                                                          width: 4,
+                                                          width: 6,
                                                         ),
                                                         const Icon(
-                                                          Icons.verified,
-                                                          color: Colors.blue,
-                                                          size: 14,
+                                                          Icons.location_on,
+                                                          size: 12,
+                                                          color: AppColors
+                                                              .textSecondary,
+                                                        ),
+                                                        Text(
+                                                          '${result.distance.toStringAsFixed(1)} km',
+                                                          style: const TextStyle(
+                                                            fontSize: 11,
+                                                            color: AppColors
+                                                                .textSecondary,
+                                                          ),
                                                         ),
                                                       ],
-                                                      if (isBest) ...[
-                                                        const SizedBox(
-                                                          width: 8,
+                                                    ),
+                                                    const SizedBox(height: 4),
+                                                    Row(
+                                                      children: [
+                                                        const Icon(
+                                                          Icons.access_time,
+                                                          size: 12,
+                                                          color: AppColors
+                                                              .textSecondary,
                                                         ),
-                                                        Container(
-                                                          padding:
-                                                              const EdgeInsets.symmetric(
-                                                                horizontal: 6,
-                                                                vertical: 2,
-                                                              ),
-                                                          decoration: BoxDecoration(
-                                                            color: const Color(
-                                                              0xFFFFAB00,
-                                                            ),
-                                                            borderRadius:
-                                                                BorderRadius.circular(
-                                                                  4,
-                                                                ),
+                                                        const SizedBox(
+                                                          width: 2,
+                                                        ),
+                                                        Text(
+                                                          _getEstimatedTime(
+                                                            result.distance,
                                                           ),
-                                                          child: const Text(
-                                                            'BEST SHOP',
+                                                          style: const TextStyle(
+                                                            fontSize: 11,
+                                                            color: AppColors
+                                                                .textSecondary,
+                                                          ),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                    const SizedBox(height: 8),
+                                                    Container(
+                                                      padding:
+                                                          const EdgeInsets.symmetric(
+                                                            horizontal: 8,
+                                                            vertical: 4,
+                                                          ),
+                                                      decoration: BoxDecoration(
+                                                        color: result.inStock
+                                                            ? AppColors.success
+                                                                  .withOpacity(
+                                                                    0.1,
+                                                                  )
+                                                            : Colors.red
+                                                                  .withOpacity(
+                                                                    0.1,
+                                                                  ),
+                                                        borderRadius:
+                                                            BorderRadius.circular(
+                                                              4,
+                                                            ),
+                                                      ),
+                                                      child: Row(
+                                                        mainAxisSize:
+                                                            MainAxisSize.min,
+                                                        children: [
+                                                          Container(
+                                                            width: 6,
+                                                            height: 6,
+                                                            decoration: BoxDecoration(
+                                                              color:
+                                                                  result.inStock
+                                                                  ? AppColors
+                                                                        .success
+                                                                  : Colors.red,
+                                                              shape: BoxShape
+                                                                  .circle,
+                                                            ),
+                                                          ),
+                                                          const SizedBox(
+                                                            width: 4,
+                                                          ),
+                                                          Text(
+                                                            result.inStock
+                                                                ? 'IN STOCK'
+                                                                : 'OUT STOCK',
                                                             style: TextStyle(
-                                                              fontSize: 8,
+                                                              fontSize: 10,
                                                               fontWeight:
                                                                   FontWeight
                                                                       .bold,
                                                               color:
-                                                                  Colors.white,
+                                                                  result.inStock
+                                                                  ? AppColors
+                                                                        .success
+                                                                  : Colors.red,
                                                             ),
                                                           ),
-                                                        ),
-                                                      ],
-                                                    ],
-                                                  ),
-
-                                                  const SizedBox(height: 4),
-                                                  Row(
-                                                    children: [
-                                                      const Icon(
-                                                        Icons.star,
-                                                        size: 12,
-                                                        color: Colors.amber,
+                                                        ],
                                                       ),
-                                                      const SizedBox(width: 2),
-                                                      Text(
-                                                        '${result.store.rating} (${result.store.totalReviews})',
-                                                        style: const TextStyle(
-                                                          fontSize: 11,
-                                                          color: AppColors
-                                                              .textSecondary,
-                                                        ),
-                                                      ),
-                                                      const SizedBox(width: 8),
-                                                      const Icon(
-                                                        Icons.location_on,
-                                                        size: 12,
-                                                        color: AppColors
-                                                            .textSecondary,
-                                                      ),
-                                                      const SizedBox(width: 2),
-                                                      Text(
-                                                        '${result.distance.toStringAsFixed(1)} km',
-                                                        style: const TextStyle(
-                                                          fontSize: 11,
-                                                          color: AppColors
-                                                              .textSecondary,
-                                                        ),
-                                                      ),
-                                                    ],
-                                                  ),
-                                                  const SizedBox(height: 4),
-                                                  Row(
-                                                    children: [
-                                                      const Icon(
-                                                        Icons.access_time,
-                                                        size: 12,
-                                                        color: AppColors
-                                                            .textSecondary,
-                                                      ),
-                                                      const SizedBox(width: 2),
-                                                      Text(
-                                                        _getEstimatedTime(
-                                                          result.distance,
-                                                        ),
-                                                        style: const TextStyle(
-                                                          fontSize: 11,
-                                                          color: AppColors
-                                                              .textSecondary,
-                                                        ),
-                                                      ),
-                                                    ],
-                                                  ),
-                                                  const SizedBox(height: 8),
-                                                  Container(
-                                                    padding:
-                                                        const EdgeInsets.symmetric(
-                                                          horizontal: 8,
-                                                          vertical: 4,
-                                                        ),
-                                                    decoration: BoxDecoration(
-                                                      color: result.inStock
-                                                          ? AppColors.success
-                                                                .withOpacity(
-                                                                  0.1,
-                                                                )
-                                                          : Colors.red
-                                                                .withOpacity(
-                                                                  0.1,
-                                                                ),
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                            4,
-                                                          ),
                                                     ),
-                                                    child: Row(
-                                                      mainAxisSize:
-                                                          MainAxisSize.min,
-                                                      children: [
-                                                        Container(
-                                                          width: 6,
-                                                          height: 6,
-                                                          decoration:
-                                                              BoxDecoration(
-                                                                color:
-                                                                    result
-                                                                        .inStock
-                                                                    ? AppColors
-                                                                          .success
-                                                                    : Colors
-                                                                          .red,
-                                                                shape: BoxShape
-                                                                    .circle,
-                                                              ),
-                                                        ),
-                                                        const SizedBox(
-                                                          width: 4,
-                                                        ),
-                                                        Text(
-                                                          result.inStock
-                                                              ? 'IN STOCK'
-                                                              : 'OUT STOCK',
-                                                          style: TextStyle(
-                                                            fontSize: 10,
-                                                            fontWeight:
-                                                                FontWeight.bold,
-                                                            color:
-                                                                result.inStock
-                                                                ? AppColors
-                                                                      .success
-                                                                : Colors.red,
+                                                  ],
+                                                ),
+                                              ),
+                                              Column(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.end,
+                                                children: [
+                                                  Text(
+                                                    result.price != null
+                                                        ? '₹${result.price!.toStringAsFixed(2)}'
+                                                        : 'Price N/A',
+                                                    style: TextStyle(
+                                                      fontSize: 18,
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                      color:
+                                                          result.price != null
+                                                          ? AppColors
+                                                                .textPrimary
+                                                          : AppColors
+                                                                .textSecondary,
+                                                    ),
+                                                  ),
+                                                  if (result.price != null)
+                                                    const Text(
+                                                      'per unit',
+                                                      style: TextStyle(
+                                                        fontSize: 10,
+                                                        color: AppColors
+                                                            .textSecondary,
+                                                      ),
+                                                    ),
+                                                  const SizedBox(height: 8),
+                                                  InkWell(
+                                                    onTap: () async {
+                                                      // Increment store visit count
+                                                      context
+                                                          .read<
+                                                            ProfileController
+                                                          >()
+                                                          .incrementStoreVisitCount();
+
+                                                      // Load navigation route
+                                                      await controller
+                                                          .navigateToStore(
+                                                            result.store,
+                                                          );
+
+                                                      // Wait a bit for route to be drawn, then fit camera
+                                                      if (controller
+                                                          .routePolyline
+                                                          .isNotEmpty) {
+                                                        // Small delay to ensure route is rendered
+                                                        await Future.delayed(
+                                                          const Duration(
+                                                            milliseconds: 300,
                                                           ),
-                                                        ),
-                                                      ],
+                                                        );
+                                                        _fitRouteBounds();
+
+                                                        // Show success message
+                                                        if (mounted) {
+                                                          ScaffoldMessenger.of(
+                                                            context,
+                                                          ).showSnackBar(
+                                                            const SnackBar(
+                                                              content: Text(
+                                                                'Route calculated successfully',
+                                                              ),
+                                                              duration:
+                                                                  Duration(
+                                                                    seconds: 2,
+                                                                  ),
+                                                              backgroundColor:
+                                                                  AppColors
+                                                                      .success,
+                                                            ),
+                                                          );
+                                                        }
+                                                      }
+                                                    },
+                                                    child: Container(
+                                                      padding:
+                                                          const EdgeInsets.symmetric(
+                                                            horizontal: 12,
+                                                            vertical: 6,
+                                                          ),
+                                                      decoration: BoxDecoration(
+                                                        color: AppColors
+                                                            .background,
+                                                        borderRadius:
+                                                            BorderRadius.circular(
+                                                              8,
+                                                            ),
+                                                      ),
+                                                      child: const Row(
+                                                        mainAxisSize:
+                                                            MainAxisSize.min,
+                                                        children: [
+                                                          Icon(
+                                                            Icons
+                                                                .navigation_outlined,
+                                                            size: 12,
+                                                            color: AppColors
+                                                                .textPrimary,
+                                                          ),
+                                                          SizedBox(width: 4),
+                                                          Text(
+                                                            'Navigate',
+                                                            style: TextStyle(
+                                                              fontSize: 11,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .w600,
+                                                            ),
+                                                          ),
+                                                        ],
+                                                      ),
                                                     ),
                                                   ),
                                                 ],
                                               ),
-                                            ),
-                                            Column(
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.end,
-                                              children: [
-                                                Text(
-                                                  result.price != null
-                                                      ? '₹${result.price!.toStringAsFixed(2)}'
-                                                      : 'Price N/A',
-                                                  style: TextStyle(
-                                                    fontSize: 18,
-                                                    fontWeight: FontWeight.bold,
-                                                    color: result.price != null
-                                                        ? AppColors.textPrimary
-                                                        : AppColors
-                                                              .textSecondary,
-                                                  ),
-                                                ),
-                                                if (result.price != null)
-                                                  const Text(
-                                                    'per unit',
-                                                    style: TextStyle(
-                                                      fontSize: 10,
-                                                      color: AppColors
-                                                          .textSecondary,
-                                                    ),
-                                                  ),
-                                                const SizedBox(height: 8),
-                                                InkWell(
-                                                  onTap: () async {
-                                                    // Increment store visit count
-                                                    context
-                                                        .read<
-                                                          ProfileController
-                                                        >()
-                                                        .incrementStoreVisitCount();
-
-                                                    // Load navigation route
-                                                    await controller
-                                                        .navigateToStore(
-                                                          result.store,
-                                                        );
-
-                                                    // Wait a bit for route to be drawn, then fit camera
-                                                    if (controller
-                                                        .routePolyline
-                                                        .isNotEmpty) {
-                                                      // Small delay to ensure route is rendered
-                                                      await Future.delayed(
-                                                        const Duration(
-                                                          milliseconds: 300,
-                                                        ),
-                                                      );
-                                                      _fitRouteBounds();
-
-                                                      // Show success message
-                                                      if (mounted) {
-                                                        ScaffoldMessenger.of(
-                                                          context,
-                                                        ).showSnackBar(
-                                                          const SnackBar(
-                                                            content: Text(
-                                                              'Route calculated successfully',
-                                                            ),
-                                                            duration: Duration(
-                                                              seconds: 2,
-                                                            ),
-                                                            backgroundColor:
-                                                                AppColors
-                                                                    .success,
-                                                          ),
-                                                        );
-                                                      }
-                                                    }
-                                                  },
-                                                  child: Container(
-                                                    padding:
-                                                        const EdgeInsets.symmetric(
-                                                          horizontal: 12,
-                                                          vertical: 6,
-                                                        ),
-                                                    decoration: BoxDecoration(
-                                                      color:
-                                                          AppColors.background,
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                            8,
-                                                          ),
-                                                    ),
-                                                    child: const Row(
-                                                      mainAxisSize:
-                                                          MainAxisSize.min,
-                                                      children: [
-                                                        Icon(
-                                                          Icons
-                                                              .navigation_outlined,
-                                                          size: 12,
-                                                          color: AppColors
-                                                              .textPrimary,
-                                                        ),
-                                                        SizedBox(width: 4),
-                                                        Text(
-                                                          'Navigate',
-                                                          style: TextStyle(
-                                                            fontSize: 11,
-                                                            fontWeight:
-                                                                FontWeight.w600,
-                                                          ),
-                                                        ),
-                                                      ],
-                                                    ),
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                          ],
+                                            ],
+                                          ),
                                         ),
                                       );
                                     },

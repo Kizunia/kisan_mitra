@@ -52,7 +52,7 @@ class StoreProfile {
       totalStock: data['totalStock'] ?? 0,
       totalViews: data['totalViews'] ?? 0,
       rating: (data['rating'] ?? 0.0).toDouble(),
-      totalReviews: data['totalReviews'] ?? 0,
+      totalReviews: data['totalReviews'] ?? data['total_reviews'] ?? 0,
       isVerified: data['isVerified'] ?? false,
       profileImageUrl: data['profileImageUrl']?.toString(),
       updatedAt: data['updatedAt'] != null

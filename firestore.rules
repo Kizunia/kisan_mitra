@@ -8,7 +8,7 @@ service cloud.firestore {
     }
 
     function isOwner(uid) {
-      return request.auth.uid == uid;
+      return isSignedIn() && request.auth.uid == uid;
     }
 
     function isAdmin() {
@@ -16,6 +16,20 @@ service cloud.firestore {
       return isSignedIn() &&
         (request.auth.token.email == 'admin@kisanmitra.com' ||
          exists(/databases/$(database)/documents/admins/$(request.auth.uid)));
+    }
+
+    function isValidStoreRatingUpdate() {
+      let changedKeys = request.resource.data.diff(resource.data).changedKeys();
+
+      return changedKeys.hasOnly(['rating', 'totalReviews', 'ratingSum', 'updatedAt']) &&
+        request.resource.data.rating is number &&
+        request.resource.data.rating >= 0 &&
+        request.resource.data.rating <= 5 &&
+        request.resource.data.totalReviews is int &&
+        request.resource.data.totalReviews >= 0 &&
+        request.resource.data.ratingSum is number &&
+        request.resource.data.ratingSum >= 0 &&
+        request.resource.data.updatedAt == request.time;
     }
 
     // Users collection - farmers can read/write their own data, admins can manage all users
@@ -34,8 +48,14 @@ service cloud.firestore {
     match /stores/{storeId} {
       allow read: if true; // Public read to allow farmers to search for stores
       allow create: if isSignedIn();
-      allow update: if isOwner(storeId) || isAdmin();
+      allow update: if isOwner(storeId) || isAdmin() || isValidStoreRatingUpdate();
       allow delete: if isOwner(storeId) || isAdmin();
+
+      match /ratings/{userId} {
+        allow read: if isOwner(userId) || isAdmin();
+        allow create, update: if isOwner(userId) || isAdmin();
+        allow delete: if isAdmin();
+      }
     }
 
     // Admins collection - read allowed for authenticated users
