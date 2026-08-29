@@ -5,6 +5,7 @@ import 'package:kisan_mitra/l10n/app_localizations.dart';
 
 import 'soil_model.dart';
 import 'soil_record_screen.dart';
+import 'npk_advisory_engine.dart' as npk;
 
 /// Screen 2: Smart Soil Analyzer — Results Screen.
 ///
@@ -54,11 +55,15 @@ class SoilResultScreen extends StatelessWidget {
               _buildSoilAnalysisSection(context, l10n),
               const SizedBox(height: 20),
 
-              // ── Compaction Gauge ─────────────────────────────────
+              //  Compaction Gauge
               _buildCompactionGauge(context, l10n),
               const SizedBox(height: 20),
 
-              // ── Weather Context ──────────────────────────────────
+              //  NPK Advisory Classifications
+              _buildNPKAdvisorySection(context, l10n),
+              const SizedBox(height: 20),
+
+              //  Weather Context
               if (advisory.weatherContext.isNotEmpty) _buildWeatherCard(l10n),
               if (advisory.weatherContext.isNotEmpty)
                 const SizedBox(height: 20),
@@ -309,9 +314,14 @@ class SoilResultScreen extends StatelessWidget {
                 ),
               ),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 6,
+                ),
                 decoration: BoxDecoration(
-                  color: _getCompactionColor(result.compactionScore).withOpacity(0.1),
+                  color: _getCompactionColor(
+                    result.compactionScore,
+                  ).withOpacity(0.1),
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: Text(
@@ -371,7 +381,10 @@ class SoilResultScreen extends StatelessWidget {
             children: [
               _buildLegendItem(l10n.soilDensityLoose, const Color(0xFF4CAF50)),
               _buildLegendItem(l10n.soilDensityMedium, const Color(0xFFFFC107)),
-              _buildLegendItem(l10n.soilDensityCompact, const Color(0xFFE53935)),
+              _buildLegendItem(
+                l10n.soilDensityCompact,
+                const Color(0xFFE53935),
+              ),
             ],
           ),
         ],
@@ -415,6 +428,194 @@ class SoilResultScreen extends StatelessWidget {
   // ═══════════════════════════════════════════════════════════════════
   //  Weather Card
   // ═══════════════════════════════════════════════════════════════════
+
+  Widget _buildNPKAdvisorySection(BuildContext context, AppLocalizations l10n) {
+    final engine = npk.NPKAdvisoryEngine();
+
+    // Map acoustic features
+    final engineFeatures = npk.AcousticFeatures(
+      peakFrequency: result.features.peakFrequency,
+      dampingRate: 100.0 / (result.features.resonanceScore + 1.0),
+      harmonicRatio:
+          result.features.spectralCentroid /
+          (result.features.peakFrequency + 1.0),
+    );
+
+    // Default to vegetative if not found
+    npk.GrowthStage stage = npk.GrowthStage.vegetative;
+    final stageText = advisory.growthStage?.toLowerCase() ?? '';
+    if (stageText.contains('basal') || stageText.contains('transplant')) {
+      stage = npk.GrowthStage.basal;
+    } else if (stageText.contains('flower')) {
+      stage = npk.GrowthStage.flowering;
+    } else if (stageText.contains('fruit')) {
+      stage = npk.GrowthStage.fruiting;
+    }
+
+    final req = npk.CropAdvisoryRequest(
+      crop: advisory.cropName ?? 'Unknown',
+      growthStage: stage,
+      acousticStrikes: [engineFeatures],
+      regionalPrior: npk.RegionalPrior(
+        district: 'Maharashtra',
+        baselineN: npk.NPKStatus.medium,
+        baselineP: npk.NPKStatus.medium,
+        baselineK: npk.NPKStatus.medium,
+        typicalSoilType: npk.SoilTexture.loamy,
+      ),
+      previousCrop: 'Unknown',
+      previousYield: 0.0,
+    );
+
+    final advisoryResult = engine.generateAdvisory(req);
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _sectionTitle('NPK Classifications & Advisory', Icons.science),
+        const SizedBox(height: 16),
+        Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(16),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.04),
+                blurRadius: 8,
+                offset: const Offset(0, 2),
+              ),
+            ],
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  _buildNPKBadge('N', advisoryResult.finalN),
+                  _buildNPKBadge('P', advisoryResult.finalP),
+                  _buildNPKBadge('K', advisoryResult.finalK),
+                ],
+              ),
+              const Padding(
+                padding: EdgeInsets.symmetric(vertical: 16),
+                child: Divider(color: Color(0xFFEEEEEE)),
+              ),
+              const Text(
+                'Recommended Fertilizer:',
+                style: TextStyle(fontSize: 12, color: Colors.grey),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                advisoryResult.recommendedFertilizer,
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 15,
+                  color: Color(0xFF1B5E20),
+                ),
+              ),
+              const SizedBox(height: 8),
+              const Text(
+                'Application Method:',
+                style: TextStyle(fontSize: 12, color: Colors.grey),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                advisoryResult.applicationMethod,
+                style: TextStyle(
+                  color: Colors.grey[800],
+                  fontSize: 13,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+              if (advisoryResult.bioavailabilityWarning != null) ...[
+                const SizedBox(height: 16),
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: Colors.orange.shade50,
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(color: Colors.orange.shade200),
+                  ),
+                  child: Row(
+                    children: [
+                      Icon(
+                        Icons.warning_amber_rounded,
+                        color: Colors.orange.shade800,
+                        size: 20,
+                      ),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: Text(
+                          advisoryResult.bioavailabilityWarning!,
+                          style: TextStyle(
+                            color: Colors.orange.shade900,
+                            fontSize: 12,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildNPKBadge(String label, npk.NPKStatus status) {
+    Color badgeColor;
+    String statusText;
+    switch (status) {
+      case npk.NPKStatus.low:
+        badgeColor = Colors.orange;
+        statusText = 'Low';
+        break;
+      case npk.NPKStatus.medium:
+        badgeColor = const Color(0xFF43A047);
+        statusText = 'Medium';
+        break;
+      case npk.NPKStatus.high:
+        badgeColor = Colors.blue;
+        statusText = 'High';
+        break;
+    }
+    return Column(
+      children: [
+        Container(
+          width: 44,
+          height: 44,
+          alignment: Alignment.center,
+          decoration: BoxDecoration(
+            color: badgeColor.withOpacity(0.1),
+            shape: BoxShape.circle,
+            border: Border.all(color: badgeColor.withOpacity(0.5), width: 2),
+          ),
+          child: Text(
+            label,
+            style: TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+              color: badgeColor,
+            ),
+          ),
+        ),
+        const SizedBox(height: 6),
+        Text(
+          statusText,
+          style: TextStyle(
+            fontSize: 12,
+            fontWeight: FontWeight.bold,
+            color: Colors.grey[800],
+          ),
+        ),
+      ],
+    );
+  }
 
   Widget _buildWeatherCard(AppLocalizations l10n) {
     return Container(
@@ -739,7 +940,7 @@ class _PremiumGaugePainter extends CustomPainter {
 
     if (value > 0) {
       final valueAngle = sweepFull * value;
-      
+
       // Sweep gradient for the value
       final gradient = SweepGradient(
         startAngle: startAngle,
@@ -760,7 +961,7 @@ class _PremiumGaugePainter extends CustomPainter {
         ..strokeCap = StrokeCap.round
         ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 8)
         ..shader = gradient;
-        
+
       canvas.drawArc(trackRect, startAngle, valueAngle, false, glowPaint);
 
       final valuePaint = Paint()
@@ -775,15 +976,15 @@ class _PremiumGaugePainter extends CustomPainter {
       final needleAngle = startAngle + valueAngle;
       final needleX = center.dx + radius * cos(needleAngle);
       final needleY = center.dy + radius * sin(needleAngle);
-      
+
       final dotPaint = Paint()
         ..color = Colors.white
         ..style = PaintingStyle.fill;
-        
+
       final shadowDotPaint = Paint()
         ..color = Colors.black.withOpacity(0.2)
         ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 4);
-        
+
       canvas.drawCircle(Offset(needleX, needleY + 2), 10, shadowDotPaint);
       canvas.drawCircle(Offset(needleX, needleY), 10, dotPaint);
 
@@ -803,10 +1004,16 @@ class _PremiumGaugePainter extends CustomPainter {
       final tickAngle = startAngle + (sweepFull * (i / 10));
       final innerRadius = radius - 26;
       final outerRadius = radius - 18;
-      
+
       canvas.drawLine(
-        Offset(center.dx + innerRadius * cos(tickAngle), center.dy + innerRadius * sin(tickAngle)),
-        Offset(center.dx + outerRadius * cos(tickAngle), center.dy + outerRadius * sin(tickAngle)),
+        Offset(
+          center.dx + innerRadius * cos(tickAngle),
+          center.dy + innerRadius * sin(tickAngle),
+        ),
+        Offset(
+          center.dx + outerRadius * cos(tickAngle),
+          center.dy + outerRadius * sin(tickAngle),
+        ),
         tickPaint,
       );
     }
